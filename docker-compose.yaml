@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: pgClientes
+    environment:
+      POSTGRES_PASSWORD: Senhaultrasecreta123
+      POSTGRES_DB: ClientesCompleto
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-clientes-completo:/var/lib/postgresql/data
+
+volumes:
+  postgres-clientes-completo:
