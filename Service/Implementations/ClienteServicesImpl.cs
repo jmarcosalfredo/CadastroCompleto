@@ -31,7 +31,7 @@ namespace CadastroCompleto.Service.Implementations
 
         public Cliente FindById(int id)
         {
-            return _context.Clientes.Find(id);
+            return _context.Clientes.Include(c => c.Endereco).Include(c => c.Telefones).FirstOrDefault(c => c.ClienteId == id);
         }
 
         public Cliente Update(Cliente cliente)

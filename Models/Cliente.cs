@@ -21,5 +21,8 @@ namespace CadastroCompleto.Models
 
         // Propriedade de navegação para Endereco do cliente (1:1)
         public Endereco Endereco { get; set; }
+
+        // Propriedade de navegação para Telefone do cliente (1:N)
+        public ICollection<Telefone> Telefones { get; set; } = new List<Telefone>();
     }
 }

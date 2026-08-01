@@ -34,6 +34,7 @@ namespace CadastroCompleto.Controllers
             {
                 return NotFound();
             }
+
             return Ok(cliente);
         }
 
@@ -41,7 +42,7 @@ namespace CadastroCompleto.Controllers
         public ActionResult<Cliente> Create(Cliente cliente)
         {
             var novoCliente = _clienteServices.Create(cliente);
-            return CreatedAtAction(nameof(GetById), new { id = novoCliente.ClienteId }, novoCliente);
+            return Ok(novoCliente);
         }
 
         [HttpPut("{id}")]

@@ -114,6 +114,57 @@ namespace CadastroCompleto.Data
                         new Endereco { EnderecoId = 10, ClienteId = 10, Estado = Estado.CE, Cidade = "Fortaleza", Bairro = "Meireles", Rua = "Av. Beira Mar", Numero = 990, Complemento = "Apto 1201", Cep = "60165-121" }
                         );
             });
+
+            modelBuilder.Entity<Telefone>(entity =>
+            {
+                entity.Property(e => e.Tipo)
+                .IsRequired();
+
+                entity.Property(e => e.Ddd)
+                .HasMaxLength(3)
+                .IsRequired();
+
+                entity.Property(e => e.Numero)
+                .HasMaxLength(9)
+                .IsRequired();
+
+                entity.HasOne(e => e.Cliente)
+                .WithMany(c => c.Telefones)
+                .HasForeignKey(t => t.ClienteId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasData(
+                    new Telefone { TelefoneId = 1, Tipo = TelefoneTipo.Celular, Ddd = "11", Numero = "987654321", ClienteId = 1 },
+                    new Telefone { TelefoneId = 2, Tipo = TelefoneTipo.Residencial, Ddd = "11", Numero = "33221100", ClienteId = 1 },
+                    new Telefone { TelefoneId = 3, Tipo = TelefoneTipo.Comercial, Ddd = "11", Numero = "32109876", ClienteId = 1 },
+
+                    new Telefone { TelefoneId = 4, Tipo = TelefoneTipo.Celular, Ddd = "21", Numero = "976543210", ClienteId = 2 },
+
+                    new Telefone { TelefoneId = 5, Tipo = TelefoneTipo.Celular, Ddd = "31", Numero = "965432109", ClienteId = 3 },
+                    new Telefone { TelefoneId = 6, Tipo = TelefoneTipo.Comercial, Ddd = "31", Numero = "32211009", ClienteId = 3 },
+
+                    new Telefone { TelefoneId = 7, Tipo = TelefoneTipo.Celular, Ddd = "51", Numero = "954321098", ClienteId = 4 },
+
+                    new Telefone { TelefoneId = 8, Tipo = TelefoneTipo.Celular, Ddd = "41", Numero = "943210987", ClienteId = 5 },
+                    new Telefone { TelefoneId = 9, Tipo = TelefoneTipo.Residencial, Ddd = "41", Numero = "31100998", ClienteId = 5 },
+                    new Telefone { TelefoneId = 10, Tipo = TelefoneTipo.Comercial, Ddd = "41", Numero = "30099887", ClienteId = 5 },
+
+                    new Telefone { TelefoneId = 11, Tipo = TelefoneTipo.Celular, Ddd = "48", Numero = "932109876", ClienteId = 6 },
+                    new Telefone { TelefoneId = 12, Tipo = TelefoneTipo.Residencial, Ddd = "48", Numero = "30988776", ClienteId = 6 },
+
+                    new Telefone { TelefoneId = 13, Tipo = TelefoneTipo.Celular, Ddd = "71", Numero = "921098765", ClienteId = 7 },
+
+                    new Telefone { TelefoneId = 14, Tipo = TelefoneTipo.Celular, Ddd = "62", Numero = "910987654", ClienteId = 8 },
+                    new Telefone { TelefoneId = 15, Tipo = TelefoneTipo.Residencial, Ddd = "62", Numero = "30877665", ClienteId = 8 },
+                    new Telefone { TelefoneId = 16, Tipo = TelefoneTipo.Comercial, Ddd = "62", Numero = "32166554", ClienteId = 8 },
+
+
+                    new Telefone { TelefoneId = 17, Tipo = TelefoneTipo.Celular, Ddd = "61", Numero = "909876543", ClienteId = 9 },
+                    new Telefone { TelefoneId = 18, Tipo = TelefoneTipo.Comercial, Ddd = "61", Numero = "32055443", ClienteId = 9 },
+
+                    new Telefone { TelefoneId = 19, Tipo = TelefoneTipo.Celular, Ddd = "85", Numero = "898765432", ClienteId = 10 }
+                    );
+            });
         }
     }
 }

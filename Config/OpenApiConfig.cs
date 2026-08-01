@@ -22,8 +22,6 @@ namespace CadastroCompleto.Config
             });
 
             return services;
-
-
         }
     }
 }
