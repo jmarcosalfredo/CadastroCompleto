@@ -16,7 +16,6 @@ namespace CadastroCompleto.Models
         public string Numero { get; set; }
 
         // Propriedade de navegação para Cliente (1:N)
-        [JsonIgnore]
         public Cliente Cliente { get; set; }
         // Chave estrangeira para o Cliente
         public int ClienteId { get; set; }

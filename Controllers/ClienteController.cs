@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CadastroCompleto.Models;
+using CadastroCompleto.Models.DTOs;
 using CadastroCompleto.Service;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CadastroCompleto.Controllers
@@ -20,60 +22,48 @@ namespace CadastroCompleto.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Cliente>> GetAll()
+        public ActionResult<List<ClienteDto>> GetAll()
         {
             var clientes = _clienteServices.FindAll();
-            return Ok(clientes);
+
+            return Ok(clientes.Adapt<List<ClienteDto>>());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Cliente> GetById(int id)
+        public ActionResult<ClienteDto> GetById(int id)
         {
             var cliente = _clienteServices.FindById(id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
+            if (cliente == null) return NotFound();
 
-            return Ok(cliente);
+            return Ok(cliente.Adapt<ClienteDto>());
         }
 
         [HttpPost]
-        public ActionResult<Cliente> Create(Cliente cliente)
+        public ActionResult<ClienteDto> Create(ClienteDto clienteDto)
         {
+            var cliente = clienteDto.Adapt<Cliente>();
             var novoCliente = _clienteServices.Create(cliente);
-            return Ok(novoCliente);
+
+            return Ok(novoCliente.Adapt<ClienteDto>());
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Cliente> Update(int id, Cliente cliente)
+        public ActionResult<ClienteDto> Update(int id, ClienteDto clienteDto)
         {
-            if (id != cliente.ClienteId)
+            if (id != clienteDto.ClienteId)
             {
                 return BadRequest();
             }
 
+            var cliente = clienteDto.Adapt<Cliente>();
             var clienteAtualizado = _clienteServices.Update(cliente);
+
             if (clienteAtualizado == null)
             {
                 return NotFound();
             }
 
-            return Ok(clienteAtualizado);
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            try
-            {
-                _clienteServices.Delete(id);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            return Ok(clienteAtualizado.Adapt<ClienteDto>());
         }
     }
 }

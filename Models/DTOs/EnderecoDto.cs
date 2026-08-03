@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using CadastroCompleto.Models.Base;
 using CadastroCompleto.Models.Enums;
 
-namespace CadastroCompleto.Models
+namespace CadastroCompleto.Models.DTOs
 {
-    public class Endereco : BaseEntity
+    public class EnderecoDto
     {
         public int EnderecoId { get; set; }
         public Estado Estado { get; set; }
@@ -18,10 +16,5 @@ namespace CadastroCompleto.Models
         public int Numero { get; set; }
         public string Complemento { get; set; }
         public string Cep { get; set; }
-
-        // Propriedade de navegação para o Cliente (1:1)
-        public Cliente Cliente { get; set; }
-        // Chave estrangeira para o Cliente (Esta aqui pq endereco é dependente de cliente)
-        public int ClienteId { get; set; }
     }
 }
