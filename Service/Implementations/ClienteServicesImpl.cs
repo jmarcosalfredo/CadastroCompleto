@@ -4,16 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using CadastroCompleto.Models;
 using CadastroCompleto.Repositories;
+using CadastroCompleto.Repositories.Implementations;
 
 namespace CadastroCompleto.Service.Implementations
 {
     public class ClienteServicesImpl : IClienteServices
     {
-        private IRepository<Cliente> _clienteRepository;
+        private IClienteRepository _clienteRepository;
         private IRepository<Endereco> _enderecoRepository;
         private IRepository<Telefone> _telefoneRepository;
 
-        public ClienteServicesImpl(IRepository<Cliente> clienteRepository, IRepository<Endereco> enderecoRepository, IRepository<Telefone> telefoneRepository)
+        public ClienteServicesImpl(IClienteRepository clienteRepository, IRepository<Endereco> enderecoRepository, IRepository<Telefone> telefoneRepository)
         {
             _clienteRepository = clienteRepository;
             _enderecoRepository = enderecoRepository;

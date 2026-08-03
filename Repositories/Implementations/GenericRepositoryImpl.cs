@@ -10,7 +10,7 @@ namespace CadastroCompleto.Repositories.Implementations
 {
     public class GenericRepositoryImpl<T> : IRepository<T> where T : BaseEntity
     {
-        private AppDbContext _context;
+        protected AppDbContext _context;
         private DbSet<T> _dbSet;
 
         public GenericRepositoryImpl(AppDbContext context)
@@ -39,12 +39,12 @@ namespace CadastroCompleto.Repositories.Implementations
             }
         }
 
-        public List<T> FindAll()
+        public virtual List<T> FindAll()
         {
             return _dbSet.ToList();
         }
 
-        public T FindById(int id)
+        public virtual T FindById(int id)
         {
             return _dbSet.Find(id);
         }
