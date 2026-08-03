@@ -4,61 +4,45 @@ using System.Linq;
 using System.Threading.Tasks;
 using CadastroCompleto.Data;
 using CadastroCompleto.Models;
+using CadastroCompleto.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 namespace CadastroCompleto.Service.Implementations
 {
     public class ClienteServicesImpl : IClienteServices
     {
-        private AppDbContext _context;
+        private IClienteRepository _clienteRepository;
 
-        public ClienteServicesImpl(AppDbContext context)
+        public ClienteServicesImpl(IClienteRepository context)
         {
-            _context = context;
+            _clienteRepository = context;
         }
 
         public Cliente Create(Cliente cliente)
         {
-            _context.Add(cliente);
-            _context.SaveChanges();
+            _clienteRepository.Create(cliente);
             return cliente;
         }
 
         public List<Cliente> FindAll()
         {
-            return _context.Clientes.Include(c => c.Endereco).ToList();
+            return _clienteRepository.FindAll();
         }
 
         public Cliente FindById(int id)
         {
-            return _context.Clientes.Include(c => c.Endereco).Include(c => c.Telefones).FirstOrDefault(c => c.ClienteId == id);
+            return _clienteRepository.FindById(id);
         }
 
         public Cliente Update(Cliente cliente)
         {
-            var clienteExistente = _context.Clientes.Find(cliente.ClienteId);
-
-            if (clienteExistente == null)
-            {
-                return null;
-            }
-
-            _context.Entry(clienteExistente).CurrentValues.SetValues(cliente);
-            _context.SaveChanges();
+            _clienteRepository.Update(cliente);
             return cliente;
         }
 
         public void Delete(int id)
         {
-            var clienteExistente = _context.Clientes.Find(id);
-
-            if (clienteExistente == null)
-            {
-                return;
-            }
-
-            _context.Clientes.Remove(clienteExistente);
-            _context.SaveChanges();
+            _clienteRepository.Delete(id);
         }
     }
 }
