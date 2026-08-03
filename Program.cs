@@ -1,5 +1,6 @@
 using CadastroCompleto.Config;
 using CadastroCompleto.Data;
+using CadastroCompleto.Repositories;
 using CadastroCompleto.Repositories.Implementations;
 using CadastroCompleto.Service;
 using CadastroCompleto.Service.Implementations;
@@ -20,7 +21,8 @@ builder.Services.AddSwaggerConfig();
 builder.Services.AddDatabaseConfigurarion(builder.Configuration);
 
 builder.Services.AddScoped<IClienteServices, ClienteServicesImpl>();
-builder.Services.AddScoped<IClienteRepository, ClienteRepositoryImpl>();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepositoryImpl<>));
 
 var app = builder.Build();
 

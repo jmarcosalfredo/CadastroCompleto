@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using CadastroCompleto.Models.Base;
 using CadastroCompleto.Models.Enums;
 
 namespace CadastroCompleto.Models
 {
-    public class Endereco
+    public class Endereco : BaseEntity
     {
         public int EnderecoId { get; set; }
         public Estado Estado { get; set; }

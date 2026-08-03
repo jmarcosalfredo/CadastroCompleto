@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CadastroCompleto.Models.Base;
 using CadastroCompleto.Models.Enums;
 
 namespace CadastroCompleto.Models
 {
-    public class Cliente
+    public class Cliente : BaseEntity
     {
         public int ClienteId { get; set; }
         public string NomeCompleto { get; set; }
