@@ -24,82 +24,55 @@ namespace CadastroCompleto.Service.Implementations
 
         public async Task<ServiceResponse<Cliente>> CreateAsync(Cliente cliente)
         {
-            var response = new ServiceResponse<Cliente>();
-
             try
             {
-                await _clienteRepository.CreateAsync(cliente);
-                response.Dados = cliente;
-                response.Mensagem = "Cliente criado com sucesso!";
+                var result = await _clienteRepository.CreateAsync(cliente);
+                return ServiceResponse<Cliente>.ComSucesso(result, "Cliente criado com sucesso!");
             }
             catch (Exception ex)
             {
-                response.Sucesso = false;
-                response.Mensagem = ex.Message;
+                return ServiceResponse<Cliente>.ComFalha(ex.Message);
             }
-
-            return response;
-
         }
 
         public async Task<ServiceResponse<List<Cliente>>> FindAllAsync()
         {
-            var response = new ServiceResponse<List<Cliente>>();
-
             try
             {
-                response.Dados = await _clienteRepository.FindAllAsync();
-                response.Mensagem = "Lista encontrada com sucesso!";
+                var result = await _clienteRepository.FindAllAsync();
+                return ServiceResponse<List<Cliente>>.ComSucesso(result, "Lista encontrada com sucesso!");
             }
             catch (Exception ex)
             {
-                response.Sucesso = false;
-                response.Mensagem = ex.Message;
+                return ServiceResponse<List<Cliente>>.ComFalha(ex.Message);
             }
-
-            return response;
         }
 
         public async Task<ServiceResponse<Cliente>> FindByIdAsync(int id)
         {
-            var response = new ServiceResponse<Cliente>();
-
             try
             {
                 var cliente = await _clienteRepository.FindByIdAsync(id);
 
                 if (cliente == null)
-                {
-                    response.Sucesso = false;
-                    response.Mensagem = "Cliente não existe no banco de dados!";
-                    return response;
-                }
+                    return ServiceResponse<Cliente>.ComFalha("Cliente não encontrado");
 
-                response.Dados = cliente;
-                response.Mensagem = "Cliente encontrado com sucesso!";
+                return ServiceResponse<Cliente>.ComSucesso(cliente, "Cliente encontrado com sucesso!");
             }
             catch (Exception ex)
             {
-                response.Sucesso = false;
-                response.Mensagem = ex.Message;
+                return ServiceResponse<Cliente>.ComFalha(ex.Message);
             }
-
-            return response;
         }
 
         public async Task<ServiceResponse<Cliente>> UpdateAsync(Cliente cliente)
         {
-            var response = new ServiceResponse<Cliente>();
             try
             {
                 var clienteExistente = await _clienteRepository.FindByIdAsync(cliente.ClienteId);
-                if (clienteExistente == null)
-                {
-                    response.Sucesso = false;
-                    response.Mensagem = "Cliente não encontrado!";
-                    return response;
-                }
 
+                if (clienteExistente == null)
+                    return ServiceResponse<Cliente>.ComFalha("Cliente não encontrado!");
 
                 await _clienteRepository.UpdateAsync(cliente);
 
@@ -129,43 +102,32 @@ namespace CadastroCompleto.Service.Implementations
                     await _telefoneRepository.DeleteAsync(telefone.TelefoneId);
 
 
-                response.Dados = cliente;
+                return ServiceResponse<Cliente>.ComSucesso(cliente, "Dados alterados com sucesso!");
             }
             catch (Exception ex)
             {
-                response.Sucesso = false;
-                response.Mensagem = ex.Message;
+                return ServiceResponse<Cliente>.ComFalha(ex.Message);
             }
-
-            return response;
         }
 
         public async Task<ServiceResponse<bool>> DeleteAsync(int id)
         {
-            var response = new ServiceResponse<bool>();
             try
             {
-                var clienteExistente = await _clienteRepository.FindByIdAsync(id);
+                var response = await _clienteRepository.FindByIdAsync(id);
 
-                if (clienteExistente == null)
+                if (response == null)
                 {
-                    response.Sucesso = false;
-                    response.Mensagem = "Cliente não encontrado!";
-                    response.Dados = false;
-
-                    return response;
+                    return ServiceResponse<bool>.ComFalha("Cliente não encontrado!");
                 }
 
                 await _clienteRepository.DeleteAsync(id);
-                response.Dados = true;
+                return ServiceResponse<bool>.ComSucesso(true, "Cliente deletado!");
             }
             catch (Exception ex)
             {
-                response.Sucesso = false;
-                response.Mensagem = ex.Message;
+                return ServiceResponse<bool>.ComFalha(ex.Message);
             }
-
-            return response;
         }
     }
 }
