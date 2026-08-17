@@ -19,46 +19,48 @@ namespace CadastroCompleto.Repositories.Implementations
             _dbSet = _context.Set<T>();
         }
 
-        public T Create(T entity)
+        public async Task<T> CreateAsync(T entity)
         {
             {
                 _dbSet.Add(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return entity;
             }
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
             {
-                var existente = _dbSet.Find(id);
-                if (existente == null) return;
+                var existente = await _dbSet.FindAsync(id);
+                if (existente == null)
+                    return;
 
                 _dbSet.Remove(existente);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public virtual List<T> FindAll()
+        public virtual async Task<List<T>> FindAllAsync()
         {
-            return _dbSet.ToList();
+            return await _dbSet.ToListAsync();
         }
 
-        public virtual T FindById(int id)
+        public virtual async Task<T> FindByIdAsync(int id)
         {
-            return _dbSet.Find(id);
+            return await _dbSet.FindAsync(id);
         }
 
-        public T Update(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
             var pk = _context.Model.FindEntityType(typeof(T)).FindPrimaryKey();
             var keyValues = pk.Properties.Select(p => p.PropertyInfo.GetValue(entity)).ToArray();
 
-            var existente = _dbSet.Find(keyValues);
-            if (existente == null) return null;
+            var existente = await _dbSet.FindAsync(keyValues);
+            if (existente == null)
+                return null;
 
             _context.Entry(existente).CurrentValues.SetValues(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
     }

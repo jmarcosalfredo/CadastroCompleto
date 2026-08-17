@@ -22,33 +22,35 @@ namespace CadastroCompleto.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<ClienteDto>> GetAll()
+        public async Task<ActionResult<List<ClienteDto>>> GetAll()
         {
-            var clientes = _clienteServices.FindAll();
+            var clientes = await _clienteServices.FindAllAsync();
 
             return Ok(clientes.Adapt<List<ClienteDto>>());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ClienteDto> GetById(int id)
+        public async Task<ActionResult<ClienteDto>> GetById(int id)
         {
-            var cliente = _clienteServices.FindById(id);
-            if (cliente == null) return NotFound();
+            var cliente = await _clienteServices.FindByIdAsync(id);
+
+            if (cliente == null)
+                return NotFound();
 
             return Ok(cliente.Adapt<ClienteDto>());
         }
 
         [HttpPost]
-        public ActionResult<ClienteDto> Create(ClienteDto clienteDto)
+        public async Task<ActionResult<ClienteDto>> Create(ClienteDto clienteDto)
         {
             var cliente = clienteDto.Adapt<Cliente>();
-            var novoCliente = _clienteServices.Create(cliente);
+            var novoCliente = await _clienteServices.CreateAsync(cliente);
 
             return Ok(novoCliente.Adapt<ClienteDto>());
         }
 
         [HttpPut("{id}")]
-        public ActionResult<ClienteDto> Update(int id, ClienteDto clienteDto)
+        public async Task<ActionResult<ClienteDto>> Update(int id, ClienteDto clienteDto)
         {
             if (id != clienteDto.ClienteId)
             {
@@ -56,7 +58,7 @@ namespace CadastroCompleto.Controllers
             }
 
             var cliente = clienteDto.Adapt<Cliente>();
-            var clienteAtualizado = _clienteServices.Update(cliente);
+            var clienteAtualizado = await _clienteServices.UpdateAsync(cliente);
 
             if (clienteAtualizado == null)
             {
@@ -64,6 +66,17 @@ namespace CadastroCompleto.Controllers
             }
 
             return Ok(clienteAtualizado.Adapt<ClienteDto>());
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var cliente = await _clienteServices.FindByIdAsync(id);
+            if (cliente == null)
+                return NotFound();
+
+            await _clienteServices.DeleteAsync(id);
+            return NoContent();
         }
     }
 }

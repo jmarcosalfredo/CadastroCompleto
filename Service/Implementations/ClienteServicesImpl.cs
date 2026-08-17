@@ -21,33 +21,33 @@ namespace CadastroCompleto.Service.Implementations
             _telefoneRepository = telefoneRepository;
         }
 
-        public Cliente Create(Cliente cliente)
+        public async Task<Cliente> CreateAsync(Cliente cliente)
         {
-            _clienteRepository.Create(cliente);
+            await _clienteRepository.CreateAsync(cliente);
             return cliente;
         }
 
-        public List<Cliente> FindAll()
+        public async Task<List<Cliente>> FindAllAsync()
         {
-            return _clienteRepository.FindAll();
+            return await _clienteRepository.FindAllAsync();
         }
 
-        public Cliente FindById(int id)
+        public async Task<Cliente> FindByIdAsync(int id)
         {
-            return _clienteRepository.FindById(id);
+            return await _clienteRepository.FindByIdAsync(id);
         }
 
-        public Cliente Update(Cliente cliente)
+        public async Task<Cliente> UpdateAsync(Cliente cliente)
         {
-            var clienteExistente = _clienteRepository.FindById(cliente.ClienteId);
+            var clienteExistente = await _clienteRepository.FindByIdAsync(cliente.ClienteId);
             if (clienteExistente == null) return null;
 
-            _clienteRepository.Update(cliente);
+            await _clienteRepository.UpdateAsync(cliente);
 
             if (cliente.Endereco != null)
             {
                 cliente.Endereco.ClienteId = cliente.ClienteId;
-                _enderecoRepository.Update(cliente.Endereco);
+                await _enderecoRepository.UpdateAsync(cliente.Endereco);
             }
 
             var telefonesExistentes = clienteExistente.Telefones.ToList();
@@ -58,23 +58,23 @@ namespace CadastroCompleto.Service.Implementations
                 telefone.ClienteId = cliente.ClienteId;
 
                 if (telefone.TelefoneId == 0)
-                    _telefoneRepository.Create(telefone);
+                    await _telefoneRepository.CreateAsync(telefone);
                 else
-                    _telefoneRepository.Update(telefone);
+                    await _telefoneRepository.UpdateAsync(telefone);
             }
 
             var telefonesRemovidos = telefonesExistentes
                 .Where(t => !idsRecebidos.Contains(t.TelefoneId));
 
             foreach (var telefone in telefonesRemovidos)
-                _telefoneRepository.Delete(telefone.TelefoneId);
+                await _telefoneRepository.DeleteAsync(telefone.TelefoneId);
 
             return cliente;
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            _clienteRepository.Delete(id);
+            await _clienteRepository.DeleteAsync(id);
         }
     }
 }

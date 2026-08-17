@@ -8,10 +8,10 @@ namespace CadastroCompleto.Repositories
 {
     public interface IRepository<T> where T : BaseEntity
     {
-        T Create(T entity);
-        T FindById(int id);
-        List<T> FindAll();
-        T Update(T entity);
-        void Delete(int id);
+        Task<T> CreateAsync(T entity);
+        Task<T> FindByIdAsync(int id);
+        Task<List<T>> FindAllAsync();
+        Task<T> UpdateAsync(T entity);
+        Task DeleteAsync(int id);
     }
 }

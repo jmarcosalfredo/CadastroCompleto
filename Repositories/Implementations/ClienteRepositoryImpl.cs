@@ -14,20 +14,20 @@ namespace CadastroCompleto.Repositories.Implementations
         {
         }
 
-        override public List<Cliente> FindAll()
+        override public async Task<List<Cliente>> FindAllAsync()
         {
-            return _context.Clientes
+            return await _context.Clientes
                 .Include(c => c.Endereco)
                 .Include(c => c.Telefones.OrderBy(t => t.TelefoneId).Take(1))
-                .ToList();
+                .ToListAsync();
         }
 
-        override public Cliente FindById(int id)
+        override public async Task<Cliente> FindByIdAsync(int id)
         {
-            return _context.Clientes
+            return await _context.Clientes
                 .Include(c => c.Endereco)
                 .Include(c => c.Telefones)
-                .FirstOrDefault(c => c.ClienteId == id);
+                .FirstOrDefaultAsync(c => c.ClienteId == id);
         }
     }
 }
