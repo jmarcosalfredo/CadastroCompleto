@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CadastroCompleto.Tests/CadastroCompleto.Tests.csproj" />
+  <Project Path="CadastroCompleto/CadastroCompleto.csproj" />
+</Solution>
