@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CadastroCompleto.Models;
 using CadastroCompleto.Models.DTOs;
+using CadastroCompleto.Models.Responses;
 using CadastroCompleto.Service;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
@@ -22,61 +23,82 @@ namespace CadastroCompleto.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ClienteDto>>> GetAll()
+        public async Task<ActionResult<ServiceResponse<List<ClienteDto>>>> GetAll()
         {
-            var clientes = await _clienteServices.FindAllAsync();
+            var response = await _clienteServices.FindAllAsync();
 
-            return Ok(clientes.Adapt<List<ClienteDto>>());
+            var result = new ServiceResponse<List<ClienteDto>>
+            {
+                Sucesso = response.Sucesso,
+                Mensagem = response.Mensagem,
+                Dados = response.Sucesso ? response.Dados.Adapt<List<ClienteDto>>() : null
+            };
+
+            return response.Sucesso ? Ok(result) : BadRequest(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ClienteDto>> GetById(int id)
+        public async Task<ActionResult<ServiceResponse<ClienteDto>>> GetById(int id)
         {
-            var cliente = await _clienteServices.FindByIdAsync(id);
+            var response = await _clienteServices.FindByIdAsync(id);
 
-            if (cliente == null)
-                return NotFound();
+            var result = new ServiceResponse<ClienteDto>
+            {
+                Sucesso = response.Sucesso,
+                Mensagem = response.Mensagem,
+                Dados = response.Sucesso ? response.Dados.Adapt<ClienteDto>() : null
+            };
 
-            return Ok(cliente.Adapt<ClienteDto>());
+            return response.Sucesso ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ClienteDto>> Create(ClienteDto clienteDto)
+        public async Task<ActionResult<ServiceResponse<ClienteDto>>> Create(ClienteDto clienteDto)
         {
             var cliente = clienteDto.Adapt<Cliente>();
-            var novoCliente = await _clienteServices.CreateAsync(cliente);
+            var response = await _clienteServices.CreateAsync(cliente);
 
-            return Ok(novoCliente.Adapt<ClienteDto>());
+            var result = new ServiceResponse<ClienteDto>
+            {
+                Sucesso = response.Sucesso,
+                Mensagem = response.Mensagem,
+                Dados = response.Sucesso ? response.Dados.Adapt<ClienteDto>() : null
+            };
+
+            return response.Sucesso ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ClienteDto>> Update(int id, ClienteDto clienteDto)
+        public async Task<ActionResult<ServiceResponse<ClienteDto>>> Update(int id, ClienteDto clienteDto)
         {
             if (id != clienteDto.ClienteId)
             {
-                return BadRequest();
+                return BadRequest(new ServiceResponse<ClienteDto>
+                {
+                    Sucesso = false,
+                    Mensagem = "Os ids devem ser compativeis!"
+                });
             }
 
             var cliente = clienteDto.Adapt<Cliente>();
-            var clienteAtualizado = await _clienteServices.UpdateAsync(cliente);
+            var response = await _clienteServices.UpdateAsync(cliente);
 
-            if (clienteAtualizado == null)
+            var result = new ServiceResponse<ClienteDto>
             {
-                return NotFound();
-            }
+                Sucesso = response.Sucesso,
+                Mensagem = response.Mensagem,
+                Dados = response.Sucesso ? response.Dados.Adapt<ClienteDto>() : null
+            };
 
-            return Ok(clienteAtualizado.Adapt<ClienteDto>());
+            return response.Sucesso ? Ok(result) : NotFound(result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<ServiceResponse<bool>>> Delete(int id)
         {
-            var cliente = await _clienteServices.FindByIdAsync(id);
-            if (cliente == null)
-                return NotFound();
+            var response = await _clienteServices.DeleteAsync(id);
 
-            await _clienteServices.DeleteAsync(id);
-            return NoContent();
+            return response.Sucesso ? NoContent() : NotFound(response);
         }
     }
 }
