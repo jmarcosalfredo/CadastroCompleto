@@ -23,7 +23,7 @@ namespace CadastroCompleto.Repositories.Implementations
         {
             {
                 _dbSet.Add(entity);
-                await _context.SaveChangesAsync();
+                //await _context.SaveChangesAsync();
                 return entity;
             }
         }
@@ -36,7 +36,7 @@ namespace CadastroCompleto.Repositories.Implementations
                     return;
 
                 _dbSet.Remove(existente);
-                await _context.SaveChangesAsync();
+                //await _context.SaveChangesAsync();
             }
         }
 
@@ -60,7 +60,7 @@ namespace CadastroCompleto.Repositories.Implementations
                 return null;
 
             _context.Entry(existente).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
             return entity;
         }
     }

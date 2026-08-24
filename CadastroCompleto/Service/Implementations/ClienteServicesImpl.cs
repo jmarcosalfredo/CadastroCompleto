@@ -11,22 +11,19 @@ namespace CadastroCompleto.Service.Implementations
 {
     public class ClienteServicesImpl : IClienteServices
     {
-        private IClienteRepository _clienteRepository;
-        private IRepository<Endereco> _enderecoRepository;
-        private IRepository<Telefone> _telefoneRepository;
+        private readonly IUnitOfWork _uof;
 
-        public ClienteServicesImpl(IClienteRepository clienteRepository, IRepository<Endereco> enderecoRepository, IRepository<Telefone> telefoneRepository)
+        public ClienteServicesImpl(IUnitOfWork uof)
         {
-            _clienteRepository = clienteRepository;
-            _enderecoRepository = enderecoRepository;
-            _telefoneRepository = telefoneRepository;
+            _uof = uof;
         }
 
         public async Task<ServiceResponse<Cliente>> CreateAsync(Cliente cliente)
         {
             try
             {
-                var result = await _clienteRepository.CreateAsync(cliente);
+                var result = await _uof.ClienteRepository.CreateAsync(cliente);
+                await _uof.CommitAsync();
                 return ServiceResponse<Cliente>.ComSucesso(result, "Cliente criado com sucesso!");
             }
             catch (Exception ex)
@@ -39,7 +36,7 @@ namespace CadastroCompleto.Service.Implementations
         {
             try
             {
-                var result = await _clienteRepository.FindAllAsync();
+                var result = await _uof.ClienteRepository.FindAllAsync();
                 return ServiceResponse<List<Cliente>>.ComSucesso(result, "Lista encontrada com sucesso!");
             }
             catch (Exception ex)
@@ -52,7 +49,7 @@ namespace CadastroCompleto.Service.Implementations
         {
             try
             {
-                var cliente = await _clienteRepository.FindByIdAsync(id);
+                var cliente = await _uof.ClienteRepository.FindByIdAsync(id);
 
                 if (cliente == null)
                     return ServiceResponse<Cliente>.ComFalha("Cliente não encontrado");
@@ -69,17 +66,19 @@ namespace CadastroCompleto.Service.Implementations
         {
             try
             {
-                var clienteExistente = await _clienteRepository.FindByIdAsync(cliente.ClienteId);
+                var clienteExistente = await _uof.ClienteRepository.FindByIdAsync(cliente.ClienteId);
 
                 if (clienteExistente == null)
                     return ServiceResponse<Cliente>.ComFalha("Cliente não encontrado!");
 
-                await _clienteRepository.UpdateAsync(cliente);
+                await _uof.ClienteRepository.UpdateAsync(cliente);
+                await _uof.CommitAsync();
 
                 if (cliente.Endereco != null)
                 {
                     cliente.Endereco.ClienteId = cliente.ClienteId;
-                    await _enderecoRepository.UpdateAsync(cliente.Endereco);
+                    await _uof.EnderecoRepository.UpdateAsync(cliente.Endereco);
+                    await _uof.CommitAsync();
                 }
 
                 var telefonesExistentes = clienteExistente.Telefones.ToList();
@@ -90,16 +89,25 @@ namespace CadastroCompleto.Service.Implementations
                     telefone.ClienteId = cliente.ClienteId;
 
                     if (telefone.TelefoneId == 0)
-                        await _telefoneRepository.CreateAsync(telefone);
+                    {
+                        await _uof.TelefoneRepository.CreateAsync(telefone);
+                        await _uof.CommitAsync();
+                    }
                     else
-                        await _telefoneRepository.UpdateAsync(telefone);
+                    {
+                        await _uof.TelefoneRepository.UpdateAsync(telefone);
+                        await _uof.CommitAsync();
+                    }
                 }
 
                 var telefonesRemovidos = telefonesExistentes
                     .Where(t => !idsRecebidos.Contains(t.TelefoneId));
 
                 foreach (var telefone in telefonesRemovidos)
-                    await _telefoneRepository.DeleteAsync(telefone.TelefoneId);
+                {
+                    await _uof.TelefoneRepository.DeleteAsync(telefone.TelefoneId);
+                    await _uof.CommitAsync();
+                }
 
 
                 return ServiceResponse<Cliente>.ComSucesso(cliente, "Dados alterados com sucesso!");
@@ -114,14 +122,15 @@ namespace CadastroCompleto.Service.Implementations
         {
             try
             {
-                var response = await _clienteRepository.FindByIdAsync(id);
+                var response = await _uof.ClienteRepository.FindByIdAsync(id);
 
                 if (response == null)
                 {
                     return ServiceResponse<bool>.ComFalha("Cliente não encontrado!");
                 }
 
-                await _clienteRepository.DeleteAsync(id);
+                await _uof.ClienteRepository.DeleteAsync(id);
+                await _uof.CommitAsync();
                 return ServiceResponse<bool>.ComSucesso(true, "Cliente deletado!");
             }
             catch (Exception ex)

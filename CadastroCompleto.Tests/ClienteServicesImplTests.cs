@@ -11,6 +11,7 @@ namespace CadastroCompleto.Tests
 {
     public class ClienteServicesImplTests
     {
+        private readonly Mock<IUnitOfWork> _uofMock;
         private readonly Mock<IClienteRepository> _clienteRepositoryMock;
         private readonly Mock<IRepository<Endereco>> _enderecoRepositoryMock;
         private readonly Mock<IRepository<Telefone>> _telefoneRepositoryMock;
@@ -18,14 +19,17 @@ namespace CadastroCompleto.Tests
 
         public ClienteServicesImplTests()
         {
+            _uofMock = new Mock<IUnitOfWork>();
             _clienteRepositoryMock = new Mock<IClienteRepository>();
             _enderecoRepositoryMock = new Mock<IRepository<Endereco>>();
             _telefoneRepositoryMock = new Mock<IRepository<Telefone>>();
 
-            _service = new ClienteServicesImpl(
-                _clienteRepositoryMock.Object,
-                _enderecoRepositoryMock.Object,
-                _telefoneRepositoryMock.Object);
+            _uofMock.Setup(u => u.ClienteRepository).Returns(_clienteRepositoryMock.Object);
+            _uofMock.Setup(u => u.EnderecoRepository).Returns(_enderecoRepositoryMock.Object);
+            _uofMock.Setup(u => u.TelefoneRepository).Returns(_telefoneRepositoryMock.Object);
+            _uofMock.Setup(u => u.CommitAsync()).ReturnsAsync(1);
+
+            _service = new ClienteServicesImpl(_uofMock.Object);
         }
 
         private static Cliente CriarClienteValido(int clienteId = 1)
@@ -65,31 +69,32 @@ namespace CadastroCompleto.Tests
         [Fact]
         public async Task CreateClienteValido_ShouldReturn_ClienteCriadoComSucesso()
         {
-            //Arrange
+            // Arrange
             var clienteMock = CriarClienteValido();
             _clienteRepositoryMock.Setup(r => r.CreateAsync(clienteMock)).ReturnsAsync(clienteMock);
 
-            //Act
+            // Act
             var result = await _service.CreateAsync(clienteMock);
 
-            //Assert
+            // Assert
             result.Sucesso.Should().BeTrue();
             result.Dados.Should().Be(clienteMock);
             result.Mensagem.Should().Be("Cliente criado com sucesso!");
             _clienteRepositoryMock.Verify(r => r.CreateAsync(clienteMock), Times.Once);
+            _uofMock.Verify(u => u.CommitAsync(), Times.Once);
         }
 
         [Fact]
         public async Task FindAllAsync_ShouldReturn_ListaClientesComSucesso()
         {
-            //Arrange
+            // Arrange
             var clientesListMock = new List<Cliente> { CriarClienteValido(1), CriarClienteValido(2) };
             _clienteRepositoryMock.Setup(r => r.FindAllAsync()).ReturnsAsync(clientesListMock);
 
-            //Act
+            // Act
             var result = await _service.FindAllAsync();
 
-            //Assert
+            // Assert
             result.Sucesso.Should().BeTrue();
             result.Dados.Should().HaveCount(2);
             result.Dados.Should().BeEquivalentTo(clientesListMock);
@@ -98,14 +103,14 @@ namespace CadastroCompleto.Tests
         [Fact]
         public async Task FindByIdAsync_ShouldReturn_ClienteComSucesso()
         {
-            //Arrange
+            // Arrange
             var clienteMock = CriarClienteValido(10);
             _clienteRepositoryMock.Setup(r => r.FindByIdAsync(5)).ReturnsAsync(clienteMock);
 
-            //Act
+            // Act
             var result = await _service.FindByIdAsync(5);
 
-            //Assert
+            // Assert
             result.Sucesso.Should().BeTrue();
             result.Dados.Should().Be(clienteMock);
         }
@@ -134,6 +139,7 @@ namespace CadastroCompleto.Tests
             _telefoneRepositoryMock.Verify(r => r.UpdateAsync(It.Is<Telefone>(t => t.TelefoneId == 1)), Times.Once);
             _telefoneRepositoryMock.Verify(r => r.UpdateAsync(It.Is<Telefone>(t => t.TelefoneId == 2)), Times.Once);
             _telefoneRepositoryMock.Verify(r => r.DeleteAsync(3), Times.Once);
+            _uofMock.Verify(u => u.CommitAsync(), Times.AtLeast(4)); // 1 cliente + 1 endereco + 3 telefones (loop) + 1 delete
         }
 
         [Fact]
@@ -151,6 +157,7 @@ namespace CadastroCompleto.Tests
             resultado.Sucesso.Should().BeTrue();
             resultado.Dados.Should().BeTrue();
             _clienteRepositoryMock.Verify(r => r.DeleteAsync(3), Times.Once);
+            _uofMock.Verify(u => u.CommitAsync(), Times.Once);
         }
     }
 }

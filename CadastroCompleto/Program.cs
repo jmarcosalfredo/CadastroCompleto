@@ -22,6 +22,7 @@ builder.Services.AddDatabaseConfigurarion(builder.Configuration);
 
 builder.Services.AddScoped<IClienteServices, ClienteServicesImpl>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepositoryImpl>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWorkImpl>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepositoryImpl<>));
 
