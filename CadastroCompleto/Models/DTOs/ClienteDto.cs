@@ -17,6 +17,7 @@ namespace CadastroCompleto.Models.DTOs
         public Estado OrgaoExpedidor { get; set; }
         public string Cpf { get; set; }
         public string Email { get; set; }
+        public string AsaasNumber { get; set; }
         public DateTimeOffset DataCriacao { get; set; }
 
         public EnderecoDto Endereco { get; set; }
