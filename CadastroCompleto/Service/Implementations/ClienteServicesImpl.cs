@@ -12,16 +12,27 @@ namespace CadastroCompleto.Service.Implementations
     public class ClienteServicesImpl : IClienteServices
     {
         private readonly IUnitOfWork _uof;
+        private readonly IAsaasService _asaasService;
 
-        public ClienteServicesImpl(IUnitOfWork uof)
+        public ClienteServicesImpl(IUnitOfWork uof, IAsaasService asaasService)
         {
             _uof = uof;
+            _asaasService = asaasService;
         }
 
         public async Task<ServiceResponse<Cliente>> CreateAsync(Cliente cliente)
         {
             try
             {
+                var clienteAsaas = await _asaasService.CreateCustumerAsync(cliente);
+
+                if (clienteAsaas == null)
+                {
+                    return ServiceResponse<Cliente>.ComFalha("Não foi possível registrar o cliente no Asaas. Tente novamente.");
+                }
+
+                cliente.AsaasNumber = clienteAsaas.Id;
+
                 var result = await _uof.ClienteRepository.CreateAsync(cliente);
                 await _uof.CommitAsync();
                 return ServiceResponse<Cliente>.ComSucesso(result, "Cliente criado com sucesso!");

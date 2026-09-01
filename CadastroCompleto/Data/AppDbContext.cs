@@ -55,6 +55,9 @@ namespace CadastroCompleto.Data
                 .HasDefaultValueSql("now()")
                 .IsRequired();
 
+                entity.Property(e => e.AsaasNumber)
+                .HasMaxLength(100);
+
                 entity.HasOne(e => e.Endereco)
                 .WithOne(c => c.Cliente)
                 .HasForeignKey<Endereco>(e => e.ClienteId)

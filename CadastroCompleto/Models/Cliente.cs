@@ -18,6 +18,7 @@ namespace CadastroCompleto.Models
         public Estado OrgaoExpedidor { get; set; }
         public string Cpf { get; set; }
         public string Email { get; set; }
+        public string AsaasNumber { get; set; }
         public DateTimeOffset DataCriacao { get; set; }
 
         // Propriedade de navegação para Endereco do cliente (1:1)

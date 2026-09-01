@@ -19,6 +19,7 @@ builder.Services.AddOpenApiConfig();
 builder.Services.AddSwaggerConfig();
 
 builder.Services.AddDatabaseConfigurarion(builder.Configuration);
+builder.Services.AddAsaasConfig(builder.Configuration);
 
 builder.Services.AddScoped<IClienteServices, ClienteServicesImpl>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepositoryImpl>();
