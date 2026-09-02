@@ -24,18 +24,19 @@ namespace CadastroCompleto.Service.Implementations
         {
             try
             {
-                var clienteAsaas = await _asaasService.CreateCustumerAsync(cliente);
+                await _uof.ClienteRepository.CreateAsync(cliente);
 
-                if (clienteAsaas == null)
+                var outboxEvent = new Outbox
                 {
-                    return ServiceResponse<Cliente>.ComFalha("Não foi possível registrar o cliente no Asaas. Tente novamente.");
-                }
+                    Tipo = "RegistrarClienteAsaas",
+                    Cliente = cliente,
+                    CriadoEm = DateTimeOffset.UtcNow,
+                };
 
-                cliente.AsaasNumber = clienteAsaas.Id;
-
-                var result = await _uof.ClienteRepository.CreateAsync(cliente);
+                await _uof.OutboxRepository.CreateAsync(outboxEvent);
                 await _uof.CommitAsync();
-                return ServiceResponse<Cliente>.ComSucesso(result, "Cliente criado com sucesso!");
+
+                return ServiceResponse<Cliente>.ComSucesso(cliente, "Cliente criado com sucesso!");
             }
             catch (Exception ex)
             {

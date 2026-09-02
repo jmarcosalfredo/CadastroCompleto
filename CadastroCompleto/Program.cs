@@ -4,6 +4,7 @@ using CadastroCompleto.Repositories;
 using CadastroCompleto.Repositories.Implementations;
 using CadastroCompleto.Service;
 using CadastroCompleto.Service.Implementations;
+using CadastroCompleto.Workers;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,8 @@ builder.Services.AddScoped<IClienteRepository, ClienteRepositoryImpl>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWorkImpl>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepositoryImpl<>));
+
+builder.Services.AddHostedService<AsaasOutboxWorker>();
 
 var app = builder.Build();
 

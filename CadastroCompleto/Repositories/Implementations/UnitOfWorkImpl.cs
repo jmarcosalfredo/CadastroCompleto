@@ -14,6 +14,7 @@ namespace CadastroCompleto.Repositories.Implementations
         private IRepository<Endereco> _enderecoRepo;
 
         private IRepository<Telefone> _telefoneRepo;
+        private IOutboxRepository _outboxRepo;
 
         public AppDbContext _context;
 
@@ -55,6 +56,18 @@ namespace CadastroCompleto.Repositories.Implementations
                     _telefoneRepo = new GenericRepositoryImpl<Telefone>(_context);
                 }
                 return _telefoneRepo;
+            }
+        }
+
+        public IOutboxRepository OutboxRepository
+        {
+            get
+            {
+                if (_outboxRepo == null)
+                {
+                    _outboxRepo = new OutboxRepositoryImpl(_context);
+                }
+                return _outboxRepo;
             }
         }
 

@@ -12,6 +12,7 @@ namespace CadastroCompleto.Repositories
         IClienteRepository ClienteRepository { get; }
         IRepository<Endereco> EnderecoRepository { get; }
         IRepository<Telefone> TelefoneRepository { get; }
+        IOutboxRepository OutboxRepository { get; }
 
         Task<int> CommitAsync();
     }

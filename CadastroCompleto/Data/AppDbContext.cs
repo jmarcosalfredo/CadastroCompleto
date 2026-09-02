@@ -18,6 +18,8 @@ namespace CadastroCompleto.Data
 
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Endereco> Enderecos { get; set; }
+        public DbSet<Telefone> Telefones { get; set; }
+        public DbSet<Outbox> Outboxes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -167,6 +169,29 @@ namespace CadastroCompleto.Data
 
                     new Telefone { TelefoneId = 19, Tipo = TelefoneTipo.Celular, Ddd = "85", Numero = "898765432", ClienteId = 10 }
                     );
+            });
+
+            modelBuilder.Entity<Outbox>(entity =>
+            {
+                entity.Property(e => e.Tipo)
+                .HasMaxLength(100)
+                .IsRequired();
+
+                entity.Property(e => e.CriadoEm)
+                .HasDefaultValueSql("now()")
+                .IsRequired();
+
+                entity.Property(e => e.Tentativas)
+                .HasDefaultValue(0)
+                .IsRequired();
+
+                entity.Property(e => e.UltimoErro)
+                .HasMaxLength(1000);
+
+                entity.HasOne(e => e.Cliente)
+                .WithMany()
+                .HasForeignKey(e => e.ClienteId)
+                .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
