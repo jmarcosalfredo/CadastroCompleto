@@ -52,5 +52,6 @@ namespace CadastroCompleto.Models.DTOs.Asaas
     public class InterestDto
     {
         public decimal Value { get; set; }
+        public MathOperationType Type { get; set; }
     }
 }

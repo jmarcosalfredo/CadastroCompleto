@@ -77,7 +77,8 @@ namespace CadastroCompleto.Service.Implementations
 
                 interest = billingRequest.Interest == null ? null : new
                 {
-                    value = billingRequest.Interest.Value
+                    value = billingRequest.Interest.Value,
+                    type = billingRequest.Fine.Type.ToString()
                 }
             };
 

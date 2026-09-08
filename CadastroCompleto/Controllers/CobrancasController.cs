@@ -21,7 +21,7 @@ namespace CadastroCompleto.Controllers
         }
 
         [HttpPost("{clienteId}")]
-        public async Task<ActionResult<ServiceResponse<AsaasBillingResponseDto>>> CreateBilling(int clienteId, [FromBody] AsaasBillingRequestDto request)
+        public async Task<ActionResult<ServiceResponse<AsaasBillingResponseDto>>> CreateBilling(int clienteId, AsaasBillingRequestDto request)
         {
             var response = await _clienteServices.CreateBillingAsync(clienteId, request);
 

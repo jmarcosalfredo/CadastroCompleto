@@ -165,7 +165,12 @@ namespace CadastroCompleto.Service.Implementations
                 }
 
                 billingRequest.Customer = cliente.AsaasNumber;
-                billingRequest.Description = $"Cobrança para o cliente {cliente.NomeCompleto} no dia {DateTime.UtcNow:yyyy/MM/dd/HH:mm:ss}";
+
+                if (billingRequest.Description is null)
+                {
+                    billingRequest.Description = $"Cobrança para o cliente {cliente.NomeCompleto} no dia {DateTime.UtcNow:yyyy/MM/dd/HH:mm:ss}";
+                }
+
                 billingRequest.ExternalReference = $"Cobrança para o cliente {cliente.ClienteId} no dia {DateTime.UtcNow:yyyy/MM/dd/HH:mm:ss}";
 
                 var billingResponse = await _asaasService.CreateBillingAsync(billingRequest);
