@@ -47,5 +47,56 @@ namespace CadastroCompleto.Service.Implementations
                 throw new Exception($"Erro inesperado ao criar cliente no Asaas: {ex.Message}", ex);
             }
         }
+
+        public async Task<AsaasBillingResponseDto> CreateBillingAsync(AsaasBillingRequestDto billingRequest)
+        {
+            var httpClient = _httpClientFactory.CreateClient("Asaas");
+
+            var request = new
+            {
+                customer = billingRequest.Customer,
+                billingType = billingRequest.BillingType.ToString(),
+                value = billingRequest.Value,
+                dueDate = billingRequest.DueDate.ToString("yyyy-MM-dd"),
+
+                description = billingRequest.Description,
+                externalReference = billingRequest.ExternalReference,
+
+                discount = billingRequest.Discount == null ? null : new
+                {
+                    value = billingRequest.Discount.Value,
+                    dueDateLimitDays = billingRequest.Discount.DueDateLimitDays,
+                    type = billingRequest.Discount.Type.ToString()
+                },
+
+                fine = billingRequest.Fine == null ? null : new
+                {
+                    value = billingRequest.Fine.Value,
+                    type = billingRequest.Fine.Type.ToString()
+                },
+
+                interest = billingRequest.Interest == null ? null : new
+                {
+                    value = billingRequest.Interest.Value
+                }
+            };
+
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync("payments", request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorBody = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Status Code: {response.StatusCode}. Detalhes: {errorBody}");
+                }
+
+                return await response.Content.ReadFromJsonAsync<AsaasBillingResponseDto>();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro inesperado ao criar cobrança no Asaas: {ex.Message}", ex);
+            }
+        }
     }
 }

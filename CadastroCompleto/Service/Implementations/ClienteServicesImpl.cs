@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CadastroCompleto.Models;
+using CadastroCompleto.Models.DTOs.Asaas;
+using CadastroCompleto.Models.Enums;
 using CadastroCompleto.Models.Responses;
 using CadastroCompleto.Repositories;
 using CadastroCompleto.Repositories.Implementations;
@@ -148,6 +150,31 @@ namespace CadastroCompleto.Service.Implementations
             catch (Exception ex)
             {
                 return ServiceResponse<bool>.ComFalha(ex.Message);
+            }
+        }
+
+        public async Task<ServiceResponse<AsaasBillingResponseDto>> CreateBillingAsync(int clienteId, AsaasBillingRequestDto billingRequest)
+        {
+            try
+            {
+                var cliente = await _uof.ClienteRepository.FindByIdAsync(clienteId);
+
+                if (cliente is null || cliente.AsaasNumber is null)
+                {
+                    return ServiceResponse<AsaasBillingResponseDto>.ComFalha("Cliente não encontrado ou não possui AsaasNumber!");
+                }
+
+                billingRequest.Customer = cliente.AsaasNumber;
+                billingRequest.Description = $"Cobrança para o cliente {cliente.NomeCompleto} no dia {DateTime.UtcNow:yyyy/MM/dd/HH:mm:ss}";
+                billingRequest.ExternalReference = $"Cobrança para o cliente {cliente.ClienteId} no dia {DateTime.UtcNow:yyyy/MM/dd/HH:mm:ss}";
+
+                var billingResponse = await _asaasService.CreateBillingAsync(billingRequest);
+
+                return ServiceResponse<AsaasBillingResponseDto>.ComSucesso(billingResponse, "Cobrança criada com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResponse<AsaasBillingResponseDto>.ComFalha(ex.Message);
             }
         }
     }

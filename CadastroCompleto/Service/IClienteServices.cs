@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CadastroCompleto.Models;
+using CadastroCompleto.Models.DTOs.Asaas;
+using CadastroCompleto.Models.Enums;
 using CadastroCompleto.Models.Responses;
 
 namespace CadastroCompleto.Service
@@ -14,5 +16,6 @@ namespace CadastroCompleto.Service
         Task<ServiceResponse<List<Cliente>>> FindAllAsync();
         Task<ServiceResponse<Cliente>> UpdateAsync(Cliente cliente);
         Task<ServiceResponse<bool>> DeleteAsync(int id);
+        Task<ServiceResponse<AsaasBillingResponseDto>> CreateBillingAsync(int clienteId, AsaasBillingRequestDto billingRequest);
     }
 }

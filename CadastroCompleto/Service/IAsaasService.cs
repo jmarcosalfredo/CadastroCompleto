@@ -10,5 +10,6 @@ namespace CadastroCompleto.Service
     public interface IAsaasService
     {
         Task<AsaasResponseDto> CreateCustumerAsync(Cliente cliente);
+        Task<AsaasBillingResponseDto> CreateBillingAsync(AsaasBillingRequestDto billingRequest);
     }
 }
